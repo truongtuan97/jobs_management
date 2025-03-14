@@ -33,6 +33,9 @@ jobs:
 
 
     steps:
+      - name: Debug credentials
+        run: bin/rails runner "puts Rails.application.credentials[:devise_jwt_secret_key]"
+
       - name: Checkout code
         uses: actions/checkout@v4
 
