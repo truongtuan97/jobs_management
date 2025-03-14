@@ -31,15 +31,7 @@ jobs:
     env:
       RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
 
-
-    steps:
-      - name: Debug credentials
-        run: |
-          ls -la
-          ls -la bin
-          bundle exec rails runner "puts Rails.application.credentials[:devise_jwt_secret_key]"
-
-
+    steps:      
       - name: Checkout code
         uses: actions/checkout@v4
 
