@@ -38,8 +38,7 @@ jobs:
 
       kafka:
         image: confluentinc/cp-kafka:latest
-        needs:
-          - zookeeper
+        needs: zookeeper
         ports:
           - "9092:9092"
         env:
