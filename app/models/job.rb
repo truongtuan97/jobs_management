@@ -7,4 +7,25 @@ class Job < ApplicationRecord
   validates :title, presence: true
   validates :description, presence: true
   validates :salary, numericality: { greater_than: 0 }
+
+  after_create :publish_event_to_kafka
+
+  def self.cached_jobs
+    jobs = REDIS.get('jobs')
+
+    if jobs.nil?
+      jobs = Job.includes(:company).all.to_json
+      REDIS.set('jobs', jobs)
+      REDIS.expire('jobs', 5.minutes.to_i)
+    end
+
+    JSON.parse(jobs)
+  end
+
+  private
+
+  def publish_event_to_kafka
+    # KafkaProducer.publish('job_events', { id: id, title: title, created_at: created_at })
+    JobEventProducer.publish('job_created', { id: id, title: title, created_at: created_at })
+  end
 end
