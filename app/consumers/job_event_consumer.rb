@@ -5,7 +5,7 @@ class JobEventConsumer < Racecar::Consumer
 
   # Cấu hình Kafka broker
   Racecar.configure do |config|
-    config.brokers = ["kafka:9092"]  # Thay vì localhost:9092
+    config.brokers = ["localhost:9092"]  # Thay vì localhost:9092
   end
   
   def process(message)
