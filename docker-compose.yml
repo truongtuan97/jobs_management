@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   db:
     image: postgres:15
@@ -29,7 +31,20 @@ services:
       REDIS_URL: redis://redis:6379/1
     volumes:
       - .:/app
-    command: bash -c "rm -f /app/tmp/pids/server.pid && bundle exec rails server -b 0.0.0.0"    
+    command: bash -c "rm -f /app/tmp/pids/server.pid && bundle exec rails server -b 0.0.0.0"
+
+  web_test:
+    build: .
+    depends_on:
+      - db
+      - redis
+    environment:
+      DATABASE_URL: postgres://user:password@db:5432/jobs_management_test
+      REDIS_URL: redis://redis:6379/1
+      ALLOW_REMOTE_DATABASE_URL: "true"  # Thêm dòng này
+    volumes:
+      - .:/app
+    command: ["bundle", "exec", "rspec"]
 
   sidekiq:
     build:
@@ -66,6 +81,6 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_MESSAGE_MAX_BYTES: 200000000
       KAFKA_REPLICA_FETCH_MAX_BYTES: 200000000
-      
+
 volumes:
   postgres_data:

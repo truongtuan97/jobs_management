@@ -87,7 +87,9 @@ RSpec.configure do |config|
   # Cấu hình Database Cleaner
   config.before(:suite) do
     DatabaseCleaner.strategy = :transaction
-    DatabaseCleaner.clean_with(:truncation)
+    # DatabaseCleaner.clean_with(:truncation)
+    DatabaseCleaner.allow_production = true
+    DatabaseCleaner.allow_remote_database_url = true
   end
 
   config.around(:each) do |example|
