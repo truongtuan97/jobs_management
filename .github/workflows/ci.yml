@@ -49,16 +49,7 @@ jobs:
     env:
       RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
 
-    steps:
-      - name: Wait for Kafka
-        run: |
-          for i in {1..10}; do
-            nc -z localhost 9092 && echo "Kafka is up" && exit 0
-            echo "Waiting for Kafka..."
-            sleep 5
-          done
-          echo "Kafka failed to start" && exit 1
-      
+    steps:      
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -73,5 +64,10 @@ jobs:
           cp config/database.yml.ci config/database.yml
           bin/rails db:create db:migrate RAILS_ENV=test
 
-      - name: Run RSpec tests
+      - name: Install dependencies
+        run: bundle install
+        
+      - name: Run tests
+        env:
+          REDIS_URL: redis://localhost:6379/1
         run: bundle exec rspec
