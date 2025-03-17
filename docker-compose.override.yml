@@ -2,4 +2,4 @@ version: '3.8'
 services:
   kafka:
     environment:
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://18.141.20.90:9092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://18.141.20.90:9092
