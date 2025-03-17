@@ -1,12 +1,12 @@
 development:
   client_id: "rails-app"
   brokers:
-    - localhost:9092
+    - 127.0.0.1:9092
 
 test:
   client_id: "rails-app"
   brokers:
-    - localhost:9092
+    - 127.0.0.1:9092
 
 production:
   client_id: "rails-app"
