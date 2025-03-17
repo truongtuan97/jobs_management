@@ -47,8 +47,7 @@ jobs:
           - 9092:9092
         env:
           KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
-          KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181        
-        options: --health-cmd "echo stat | nc localhost 2181 || exit 1" --health-interval 10s --health-retries 5
+          KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
 
     env:
       RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
