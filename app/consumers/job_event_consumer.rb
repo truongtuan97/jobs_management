@@ -5,15 +5,15 @@ class JobEventConsumer < Racecar::Consumer
 
   # Cấu hình Kafka broker
   Racecar.configure do |config|
-    config.brokers = ["kafka:9092"]  # Thay vì 127.0.0.1:9092
+    config.brokers = ['localhost:9092'] # Thay vì 127.0.0.1:9092
   end
-  
+
   def process(message)
     event_data = JSON.parse(message.value)
     event_type = message.key
 
     # Đẩy vào Redis Pub/Sub
-    REDIS.publish("notifications", { event: event_type, data: event_data }.to_json)
+    REDIS.publish('notifications', { event: event_type, data: event_data }.to_json)
 
     puts "📩 Received Kafka event: #{message.value}"
   end
