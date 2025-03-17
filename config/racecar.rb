@@ -8,6 +8,6 @@ Racecar.configure do |config|
   env_config = racecar_config[Rails.env] || {}
 
   # Thiết lập brokers và client_id từ file YAML
-  config.brokers = env_config['brokers'] || ['127.0.0.1:9092']
+  config.brokers = env_config['brokers'] || ['kafka:9092']
   config.client_id = env_config['client_id'] || 'default-client'
 end
