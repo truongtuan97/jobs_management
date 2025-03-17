@@ -34,9 +34,9 @@ jobs:
           - 6379:6379
 
       zookeeper:
-        image: "confluentinc/cp-enterprise-kafka:5.2.1"
+        image: confluentinc/cp-zookeeper:latest
         ports:
-          - "2181:2181"
+          - 2181:2181
         env:
           ZOOKEEPER_CLIENT_PORT: 2181
           ZOOKEEPER_TICK_TIME: 2000    
@@ -44,15 +44,13 @@ jobs:
       kafka:
         image: confluentinc/cp-kafka:latest
         ports:
-          - '9092:9092'
-          - '29094:29094'    
+          - 9092:9092
         env:
-          KAFKA_BROKER_ID: 0
-          KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-          KAFKA_LISTENERS: LISTENER_BOB://kafka:29092,LISTENER_FRED://kafka:9092,LISTENER_ALICE://kafka:29094
-          KAFKA_ADVERTISED_LISTENERS: LISTENER_BOB://kafka:29092,LISTENER_FRED://localhost:9092,LISTENER_ALICE://never-gonna-give-you-up:29094
-          KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_BOB:PLAINTEXT,LISTENER_FRED:PLAINTEXT,LISTENER_ALICE:PLAINTEXT
-          KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_BOB
+          KAFKA_BROKER_ID: 1
+          KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+          KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+          KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+          KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
 
     env:
       RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
