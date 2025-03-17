@@ -2,7 +2,7 @@ require 'kafka'
 
 class KafkaProducer
   def self.kafka_client
-    @kafka_client ||= Kafka.new(['127.0.0.1:9092'], client_id: 'rails-app')
+    @kafka_client ||= Kafka.new(['18.141.20.90:9092'], client_id: 'rails-app')
   end
 
   def self.publish(topic, message)
