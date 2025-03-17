@@ -5,7 +5,14 @@ class JobEventConsumer < Racecar::Consumer
 
   # Cấu hình Kafka broker
   Racecar.configure do |config|
-    config.brokers = ['kafka:9092'] # Thay vì 127.0.0.1:9092
+    racecar_config = YAML.load_file(Rails.root.join('config', 'racecar.yml'))
+
+    # Xác định môi trường (development, test, production)
+    env_config = racecar_config[Rails.env] || {}
+
+    # Thiết lập brokers và client_id từ file YAML
+    config.brokers = env_config['brokers'] || ['localhost:9092']
+    config.client_id = env_config['client_id'] || 'default-client'
   end
 
   def process(message)
