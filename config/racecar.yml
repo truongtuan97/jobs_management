@@ -11,6 +11,4 @@ test:
 production:
   client_id: "rails-app"
   brokers:
-    - kafka1.myapp.com:9092
-    - kafka2.myapp.com:9092
-    - kafka3.myapp.com:9092
+    - kafka:9092
