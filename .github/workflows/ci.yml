@@ -49,7 +49,7 @@ jobs:
         ports:
           - 9092:9092
 
-      mongo:
+      mongodb:
         image: mongo:latest
         ports:
           - 27017:27017
