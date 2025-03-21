@@ -56,7 +56,6 @@ jobs:
         env:
           MONGO_INITDB_ROOT_USERNAME: root
           MONGO_INITDB_ROOT_PASSWORD: example
-          MONGODB_URI_TEST: "mongodb://root:example@mongodb:27017/jobs_management_test?authSource=admin"
         options: >-
           --health-cmd "mongosh --eval 'db.runCommand({ ping: 1 })'"
           --health-interval 10s
@@ -65,6 +64,7 @@ jobs:
 
     env:
       RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
+      MONGODB_URI_TEST: "mongodb://root:example@mongo:27017/jobs_management_test?authSource=admin"
 
     steps:      
       - name: Checkout code
@@ -75,6 +75,15 @@ jobs:
         with:
           ruby-version: 3.3.0
           bundler-cache: true
+
+      - name: Wait for MongoDB
+        run: |
+          for i in {1..30}; do
+            nc -z mongo 27017 && echo "MongoDB is up" && exit 0
+            echo "Waiting for MongoDB..."
+            sleep 2
+          done
+          echo "MongoDB did not start in time" && exit 1
 
       - name: Set up database
         run: |
