@@ -92,6 +92,10 @@ RSpec.configure do |config|
     DatabaseCleaner.allow_remote_database_url = true
   end
 
+  puts "MongoDB Connected?" unless Mongoid.default_client.nil?
+  puts "Collections: #{Mongoid.default_client.collections.map(&:name)}" if Mongoid.default_client
+
+
   config.before(:each) do
     DatabaseCleaner[:active_record].start
     # Kiểm tra MongoDB trước khi xóa dữ liệu
