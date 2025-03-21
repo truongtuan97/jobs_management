@@ -49,6 +49,13 @@ jobs:
         ports:
           - 9092:9092
 
+      mongo:
+        image: mongo:latest
+        ports:
+          - 27017:27017
+        env:
+          MONGODB_URI: "mongodb://root:example@mongodb:27017/jobs_management?authSource=admin"
+
     env:
       RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
 

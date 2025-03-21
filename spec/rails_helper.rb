@@ -92,6 +92,7 @@ RSpec.configure do |config|
     DatabaseCleaner.allow_remote_database_url = true
 
     DatabaseCleaner[:mongoid].strategy = :deletion
+    DatabaseCleaner[:mongoid].clean_with(:deletion)
   end
 
   config.before(:each) do
@@ -102,10 +103,6 @@ RSpec.configure do |config|
     DatabaseCleaner.cleaning do
       example.run
     end
-  end
-
-  config.after(:each) do
-    DatabaseCleaner[:mongoid].clean
   end
 
   config.include AuthHelpers
