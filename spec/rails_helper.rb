@@ -102,6 +102,9 @@ RSpec.configure do |config|
     DatabaseCleaner.cleaning do
       example.run
     end
+  end
+
+  config.after(:each) do
     DatabaseCleaner[:mongoid].clean
   end
 
