@@ -50,7 +50,7 @@ jobs:
           - 9092:9092
 
       mongo:
-        image: mongo:latest
+        image: mongo:6.0
         ports:
           - 27017:27017
         options: >-
