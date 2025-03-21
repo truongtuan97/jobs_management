@@ -91,17 +91,16 @@ RSpec.configure do |config|
     DatabaseCleaner.allow_production = true
     DatabaseCleaner.allow_remote_database_url = true
 
-    DatabaseCleaner[:mongoid].strategy = :deletion
+    Mongoid.purge! # Xóa sạch database trước khi chạy test
   end
 
   config.before(:each) do
-    DatabaseCleaner[:mongoid].start
+    DatabaseCleaner[:active_record].start
+    Mongoid.purge! # Dùng Mongoid.purge! thay vì DatabaseCleaner[:mongoid]
   end
 
-  config.around(:each) do |example|
-    DatabaseCleaner.cleaning do
-      example.run
-    end
+  config.after(:each) do
+    DatabaseCleaner[:active_record].clean
   end
 
   config.include AuthHelpers
