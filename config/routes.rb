@@ -16,6 +16,7 @@ Rails.application.routes.draw do
       resources :jobs
       resources :applications, only: [:index, :create]
       resources :comments, only: [:create]
+      resources :auditlogs, only: [:index]
     end
   end
 

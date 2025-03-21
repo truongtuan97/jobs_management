@@ -46,5 +46,9 @@ module JobsManagement
     config.active_job.queue_adapter = :sidekiq
 
     config.racecar = config_for(:racecar)
+
+    config.middleware.use Rack::Attack
+
+    Mongoid.load!(Rails.root.join('config', 'mongoid.yml'))
   end
 end

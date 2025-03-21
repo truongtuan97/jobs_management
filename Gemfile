@@ -49,6 +49,7 @@ end
 group :test do
   gem 'database_cleaner-active_record'
   gem 'shoulda-matchers', '~> 5.0'
+  gem 'database_cleaner-mongoid' # Dùng để reset MongoDB trong test
 end
 
 group :development do
@@ -56,6 +57,8 @@ group :development do
   # gem "spring"
   gem 'letter_opener'
   gem 'letter_opener_web'
+  gem 'brakeman', require: false
+  # gem 'bullet'
 end
 
 gem 'devise'
@@ -68,5 +71,8 @@ gem "graphql", "~> 2.4"
 gem 'sidekiq'
 gem 'sidekiq-cron' # (tùy chọn, nếu muốn lên lịch cron jobs)
 
-gem 'ruby-kafka'
 gem 'racecar' # Client Kafka để chạy Consumer dễ dàng
+gem 'ruby-kafka'
+
+gem 'rack-attack'
+gem 'mongoid', '~> 8.0'

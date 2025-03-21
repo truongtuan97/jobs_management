@@ -86,16 +86,23 @@ RSpec.configure do |config|
 
   # Cấu hình Database Cleaner
   config.before(:suite) do
-    DatabaseCleaner.strategy = :transaction
+    DatabaseCleaner.strategy = :deletion
     # DatabaseCleaner.clean_with(:truncation)
     DatabaseCleaner.allow_production = true
     DatabaseCleaner.allow_remote_database_url = true
+
+    DatabaseCleaner[:mongoid].strategy = :deletion
+  end
+
+  config.before(:each) do
+    DatabaseCleaner[:mongoid].start
   end
 
   config.around(:each) do |example|
     DatabaseCleaner.cleaning do
       example.run
     end
+    DatabaseCleaner[:mongoid].clean
   end
 
   config.include AuthHelpers

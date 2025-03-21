@@ -9,6 +9,7 @@ class Job < ApplicationRecord
   validates :salary, numericality: { greater_than: 0 }
 
   after_create :publish_event_to_kafka
+  after_update :log_changes
 
   def self.cached_jobs
     jobs = REDIS.get('jobs')
@@ -27,5 +28,14 @@ class Job < ApplicationRecord
   def publish_event_to_kafka
     # KafkaProducer.publish('job_events', { id: id, title: title, created_at: created_at })
     JobEventProducer.publish('job_created', { id: id, title: title, created_at: created_at })
+  end
+
+  def log_changes
+    AuditLog.create!(
+      action: 'update',
+      user_id: user.id,
+      details: previous_changes,
+      created_at: Time.current
+    )
   end
 end

@@ -74,4 +74,12 @@ Rails.application.configure do
   config.action_mailer.raise_delivery_errors = false
   config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
   
+  # config.after_initialize do
+  #   Bullet.enable = true # Kích hoạt Bullet
+  #   Bullet.alert = true  # Hiển thị thông báo trên trình duyệt
+  #   Bullet.bullet_logger = true # Ghi log vào tệp log/bullet.log
+  #   Bullet.console = true # Hiển thị thông báo trên console
+  #   Bullet.rails_logger = true # Ghi log vào tệp log/development.log
+  #   Bullet.add_footer = true # Thêm cảnh báo vào footer HTML
+  # end
 end

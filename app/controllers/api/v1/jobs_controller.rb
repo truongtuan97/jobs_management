@@ -16,6 +16,12 @@ class Api::V1::JobsController < ApplicationController
     job = current_user.jobs.build(job_params)
     if job.save
       JobNotificationJob.perform_later(job.id)
+
+      AuditLog.create!(
+        user_id: current_user.id,
+        action: 'job_created',
+        details: { job_id: job.id, title: job.title }
+      )
       render json: {job: job }, status: :created
     else
       render json: { errors: job.errors.full_messages }, status: :unprocessable_entity
