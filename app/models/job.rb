@@ -26,8 +26,8 @@ class Job < ApplicationRecord
   private
 
   def publish_event_to_kafka
-    # KafkaProducer.publish('job_events', { id: id, title: title, created_at: created_at })
-    JobEventProducer.publish('job_created', { id: id, title: title, created_at: created_at })
+    # KafkaProducer.publish('job_events', { id: id, title: title, created_at: created_at })    
+    JobEventProducer.publish('job_created', { id: id, title: title, created_at: created_at }) unless Rails.env.test?
   end
 
   def log_changes
