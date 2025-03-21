@@ -8,14 +8,9 @@ development:
 test:
   clients:
     default:
-      uri: <%= ENV['MONGODB_URI_TEST'] %>
-      hosts:
-        - localhost:27017
+      uri: <%= ENV['MONGODB_URI_TEST'] %>      
       options:
-        server_selection_timeout: 5
-        read:
-          mode: :primary
-        max_pool_size: 1
+        server_selection_timeout: 5        
 
 production:
   clients:
