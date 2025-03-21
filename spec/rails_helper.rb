@@ -95,7 +95,7 @@ RSpec.configure do |config|
   config.before(:each) do
     DatabaseCleaner[:active_record].start
     # Kiểm tra MongoDB trước khi xóa dữ liệu
-    if Mongoid.default_client.collections.any?
+    if Mongoid.default_client&.collections&.any?
       Mongoid.purge!
     end
   end
