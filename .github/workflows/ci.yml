@@ -57,10 +57,11 @@ jobs:
           MONGO_INITDB_ROOT_USERNAME: root
           MONGO_INITDB_ROOT_PASSWORD: example
         options: >-
-          --health-cmd "mongosh --eval 'db.runCommand({ ping: 1 })'"
+          --name mongodb
+          --health-cmd "echo 'db.runCommand({ ping: 1 })' | mongosh --quiet"
           --health-interval 10s
           --health-timeout 5s
-          --health-retries 5
+          --health-retries 10
 
     env:
       RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
@@ -79,7 +80,7 @@ jobs:
       - name: Wait for MongoDB
         run: |
           for i in {1..30}; do
-            nc -z mongodb 27017 && echo "MongoDB is up" && exit 0
+            nc -z localhost 27017 && echo "MongoDB is up" && exit 0
             echo "Waiting for MongoDB..."
             sleep 2
           done
