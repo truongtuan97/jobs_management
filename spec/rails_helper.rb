@@ -90,13 +90,14 @@ RSpec.configure do |config|
     # DatabaseCleaner.clean_with(:truncation)
     DatabaseCleaner.allow_production = true
     DatabaseCleaner.allow_remote_database_url = true
-
-    Mongoid.purge! # Xóa sạch database trước khi chạy test
   end
 
   config.before(:each) do
     DatabaseCleaner[:active_record].start
-    Mongoid.purge! # Dùng Mongoid.purge! thay vì DatabaseCleaner[:mongoid]
+    # Kiểm tra MongoDB trước khi xóa dữ liệu
+    if Mongoid.default_client.collections.any?
+      Mongoid.purge!
+    end
   end
 
   config.after(:each) do
