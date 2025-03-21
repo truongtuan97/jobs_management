@@ -65,7 +65,7 @@ jobs:
 
     env:
       RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
-      MONGODB_URI_TEST: "mongodb://root:example@mongodb:27017/jobs_management_test?authSource=admin"
+      MONGODB_URI_TEST: "mongodb://root:example@localhost:27017/jobs_management_test?authSource=admin"
 
     steps:      
       - name: Checkout code
