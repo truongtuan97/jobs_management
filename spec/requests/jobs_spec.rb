@@ -1,20 +1,19 @@
 require 'rails_helper'
 
 RSpec.describe 'Jobs API', type: :request do
-  let!(:user) { build_stubbed(:user) }
-  let!(:company) { build_stubbed(:company) }
-  let!(:jobs) { build_stubbed_list(:job, 3, company: company, user: user) }
+  let!(:user) { create(:user) }
+  let!(:company) { create(:company) } 
+  let!(:jobs) { create_list(:job, 3, company: company, user: user) }
   let(:job_id) { jobs.first.id }
   let(:headers) { valid_headers(user) }
 
   describe 'GET /api/v1/jobs' do
     before do
-      allow(Job).to receive(:all).and_return(jobs)
       get '/api/v1/jobs', headers: headers
     end
 
     it 'returns jobs' do
-      expect(JSON.parse(response.body)['jobs'].size).to eq(3)
+      expect(JSON.parse(JSON.parse(response.body)['jobs']).size).to eq(3)
     end
 
     it 'returns status code 200' do
