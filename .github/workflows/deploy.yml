@@ -27,7 +27,10 @@ jobs:
           cd /home/ubuntu/app  # Đường dẫn đến thư mục dự án trên EC2
           git pull origin main  # Lấy code mới
           
-          mkdir -p postgres_data
+          if [ ! -d "/home/ubuntu/app/postgres_data" ]; then
+            mkdir -p /home/ubuntu/app/postgres_data
+            sudo chown -R ubuntu:ubuntu /home/ubuntu/app/postgres_data
+          fi
 
           # Xóa container cũ, không xóa volume
           docker-compose -f docker-compose.yml -f docker-compose.prod.yml down --remove-orphans
