@@ -1,5 +1,11 @@
 version: '3.8'
 
+networks:
+  my_network:
+    ipam:
+      config:
+        - subnet: 192.168.224.0/24
+
 services:
   mongodb:
     image: mongo:latest
@@ -7,40 +13,90 @@ services:
     restart: always
     ports:
       - "27017:27017"
+    networks:
+      my_network:
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
     volumes:
       - mongodb_data:/data/db
-      
-  db:
+
+  masterdb:
     image: postgres:15
-    restart: always
+    container_name: masterdb
+    restart: always    
+    networks:
+      my_network:
+        ipv4_address: 192.168.224.4    
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
       POSTGRES_DB: jobs_management
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ./postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    command: >
+      postgres -c wal_level=replica 
+               -c max_wal_senders=10 
+               -c max_replication_slots=10 
+               -c hot_standby=on
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d jobs_management"]
+      interval: 10s
+      retries: 5
+
+  replicadb:
+    image: postgres:15
+    container_name: replicadb
+    restart: always
+    networks:
+      my_network:
+        ipv4_address: 192.168.224.8
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: jobs_management
+    volumes:
+      - ./postgres_replica_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"      
+    user: "postgres"
+    depends_on:
+      masterdb:
+        condition: service_healthy
+    command: >
+      bash -c "
+      rm -rf /var/lib/postgresql/data/*
+      && PGPASSWORD=password pg_basebackup -h masterdb -D /var/lib/postgresql/data -U user -Fp -Xs -R -P
+      && echo 'standby_mode = on' > /var/lib/postgresql/data/standby.signal
+      && chown -R postgres:postgres /var/lib/postgresql/data
+      && chmod 700 /var/lib/postgresql/data
+      && exec postgres
+      "
 
   redis:
     image: redis:alpine
     restart: always
     ports:
       - "6379:6379"
+    networks:
+      my_network:  
 
   web:
     build: .
     depends_on:
-      - db
+      - masterdb
+      - replicadb
       - mongodb
       - redis
     ports:
       - "3000:3000"
+    networks:
+      my_network:  
     environment:
-      DATABASE_URL: postgres://user:password@db:5432/jobs_management
+      DATABASE_URL: postgres://user:password@masterdb:5432/jobs_management
+      DATABASE_READ_REPLICA_URL: postgres://user:password@replicadb:5432/jobs_management
       REDIS_URL: redis://redis:6379/1
       MONGODB_URI: "mongodb://root:example@mongodb:27017/jobs_management?authSource=admin"
       MONGODB_URI_TEST: "mongodb://root:example@mongodb:27017/jobs_management_test?authSource=admin"
@@ -48,31 +104,21 @@ services:
       - .:/app
     command: bash -c "rm -f /app/tmp/pids/server.pid && bundle exec rails server -b 0.0.0.0"
 
-  # web_test:
-  #   build: .
-  #   depends_on:
-  #     - db
-  #     - redis
-  #     - mongodb
-  #   environment:
-  #     RAILS_ENV: test
-  #     DATABASE_URL: postgres://user:password@db:5432/jobs_management_test
-  #     MONGODB_URI_TEST: "mongodb://root:example@mongodb:27017/jobs_management_test?authSource=admin"
-  #     REDIS_URL: redis://redis:6379/1
-  #     ALLOW_REMOTE_DATABASE_URL: "true"  # Thêm dòng này
-  #   volumes:
-  #     - .:/app
-  #   command: ["bundle", "exec", "rspec"]
-
   sidekiq:
     build:
       context: .
       dockerfile: Dockerfile.sidekiq
     depends_on:
       - redis
-      - db
-    environment:
-      DATABASE_URL: postgres://user:password@db:5432/jobs_management
+      - masterdb
+    networks:
+      my_network:  
+    environment:      
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_HOST: masterdb
+      POSTGRES_DB: jobs_management
+      DATABASE_URL: postgres://user:password@masterdb:5432/jobs_management
       REDIS_URL: redis://redis:6379/1
     volumes:
       - .:/app
@@ -84,6 +130,8 @@ services:
     restart: always
     ports:
       - "2181:2181"
+    networks:
+      my_network:  
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000      
@@ -94,6 +142,8 @@ services:
     restart: always
     ports:
       - "9092:9092"
+    networks:
+      my_network:  
     depends_on:
       - zookeeper    
     environment:
@@ -105,4 +155,5 @@ services:
 
 volumes:
   postgres_data:
+  postgres_replica_data:
   mongodb_data:

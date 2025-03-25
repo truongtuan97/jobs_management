@@ -76,3 +76,5 @@ gem 'ruby-kafka'
 
 gem 'rack-attack'
 gem 'mongoid', '~> 8.0'
+
+gem 'makara'

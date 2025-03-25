@@ -14,20 +14,34 @@ jobs:
     runs-on: ubuntu-latest
     
     services:
-      postgres:
+      masterdb:
         image: postgres:15
         env:
-          POSTGRES_USER: postgres
+          POSTGRES_USER: user
           POSTGRES_PASSWORD: password
-          POSTGRES_DB: test_db
+          POSTGRES_DB: jobs_management
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U postgres"
+          --health-cmd "pg_isready -U user -d jobs_management"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-      
+
+      replicadb:
+        image: postgres:15
+        env:
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: jobs_management
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd "pg_isready -U user -d jobs_management"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
       redis:
         image: redis:latest
         ports:
@@ -65,6 +79,9 @@ jobs:
 
     env:
       RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
+      DATABASE_URL: postgres://user:password@localhost:5432/jobs_management
+      DATABASE_READ_REPLICA_URL: postgres://user:password@localhost:5433/jobs_management
+      REDIS_URL: redis://localhost:6379/1
       MONGODB_URI_TEST: "mongodb://root:example@localhost:27017/jobs_management_test?authSource=admin"
 
     steps:      
@@ -76,6 +93,20 @@ jobs:
         with:
           ruby-version: 3.3.0
           bundler-cache: true
+
+      - name: Wait for databases to be ready
+        run: |
+          for i in {1..30}; do
+            nc -z localhost 5432 && echo "MasterDB is up" && break
+            echo "Waiting for MasterDB..."
+            sleep 2
+          done
+
+          for i in {1..30}; do
+            nc -z localhost 5433 && echo "ReplicaDB is up" && break
+            echo "Waiting for ReplicaDB..."
+            sleep 2
+          done
 
       - name: Wait for MongoDB
         run: |

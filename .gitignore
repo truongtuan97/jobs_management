@@ -33,3 +33,6 @@
 /config/master.key
 
 docker-compose.prod.yml
+
+postgres_data/*
+postgres_replica_data/*
