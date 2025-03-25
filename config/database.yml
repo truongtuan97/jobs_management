@@ -53,7 +53,7 @@ production:
       - role: replica
         name: replica        
         host: <%= ENV['DB_HOST'] || 'replicadb' %>
-        port: <%= ENV['DB_PORT'] || 5432 %>
+        port: <%= ENV['DB_PORT'] || 5433 %>
         database: <%= ENV['DB_NAME'] || 'jobs_management' %>
         username: <%= ENV['DB_USERNAME'] || 'user' %>
         password: <%= ENV['DB_PASSWORD'] || 'password' %>
