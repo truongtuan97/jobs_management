@@ -27,7 +27,7 @@ jobs:
           git pull origin main  # Lấy code mới
           
           # Xóa container cũ, không xóa volume
-          docker-compose -f docker-compose.yml -f docker-compose.prod.yml down
+          docker-compose -f docker-compose.yml -f docker-compose.prod.yml down --remove-orphans
           
           # Chạy lại với môi trường production
           docker-compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d
