@@ -19,22 +19,31 @@ jobs:
         echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
         ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
-    
+
     - name: Deploy to EC2
       run: |
         ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+          set -e  # Dừng script nếu có lỗi
+
           export COMPOSE_HTTP_TIMEOUT=300
           cd /home/ubuntu/app  # Đường dẫn đến thư mục dự án trên EC2
-          git pull origin main  # Lấy code mới
-          
+          git pull origin main  # Lấy code mới nhất
+
+          # Tạo thư mục data nếu chưa có (để tránh lỗi permission)
           if [ ! -d "/home/ubuntu/app/postgres_data" ]; then
             mkdir -p /home/ubuntu/app/postgres_data
             sudo chown -R ubuntu:ubuntu /home/ubuntu/app/postgres_data
           fi
 
-          # Xóa container cũ, không xóa volume
-          docker-compose -f docker-compose.yml -f docker-compose.prod.yml down --remove-orphans
-          
-          # Chạy lại với môi trường production
+          echo "🔹 Stopping & removing old containers..."
+          docker-compose down --remove-orphans
+
+          echo "🔹 Removing all Docker images..."
+          docker rmi -f $(docker images -aq) || true
+
+          echo "🔹 Pruning Docker system..."
+          docker system prune -af --volumes || true
+
+          echo "🔹 Rebuilding & deploying services..."
           docker-compose -f docker-compose.prod.yml up --build -d
         EOF
