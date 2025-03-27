@@ -36,24 +36,28 @@ test:
   port: 5432
 
 production:
-  <<: *default
-  database: jobs_management_production
-  adapter: "makara"
-  makara:
-    primary_ttl: 5
-    sticky: true
-    connections:
-      - role: master
-        name: primary        
-        host: <%= ENV['DB_HOST'] || 'masterdb' %>
-        port: <%= ENV['DB_PORT'] || 5432 %>
-        database: <%= ENV['DB_NAME'] || 'jobs_management' %>
-        username: <%= ENV['DB_USERNAME'] || 'user' %>
-        password: <%= ENV['DB_PASSWORD'] || 'password' %>
-      - role: replica
-        name: replica        
-        host: <%= ENV['DB_HOST'] || 'replicadb' %>
-        port: <%= ENV['DB_PORT'] || 5433 %>
-        database: <%= ENV['DB_NAME'] || 'jobs_management' %>
-        username: <%= ENV['DB_USERNAME'] || 'user' %>
-        password: <%= ENV['DB_PASSWORD'] || 'password' %>
+  <<: *default  
+  host: <%= ENV['DB_HOST'] || 'masterdb' %>
+  port: <%= ENV['DB_PORT'] || 5432 %>
+  database: <%= ENV['DB_NAME'] || 'jobs_management' %>
+  username: <%= ENV['DB_USERNAME'] || 'user' %>
+  password: <%= ENV['DB_PASSWORD'] || 'password' %>
+  # adapter: "makara"
+  # makara:
+  #   primary_ttl: 5
+  #   sticky: true
+  #   connections:
+  #     - role: master
+  #       name: primary        
+  #       host: <%= ENV['DB_HOST'] || 'masterdb' %>
+  #       port: <%= ENV['DB_PORT'] || 5432 %>
+  #       database: <%= ENV['DB_NAME'] || 'jobs_management' %>
+  #       username: <%= ENV['DB_USERNAME'] || 'user' %>
+  #       password: <%= ENV['DB_PASSWORD'] || 'password' %>
+  #     - role: replica
+  #       name: replica        
+  #       host: <%= ENV['DB_HOST'] || 'replicadb' %>
+  #       port: <%= ENV['DB_PORT'] || 5433 %>
+  #       database: <%= ENV['DB_NAME'] || 'jobs_management' %>
+  #       username: <%= ENV['DB_USERNAME'] || 'user' %>
+  #       password: <%= ENV['DB_PASSWORD'] || 'password' %>

@@ -38,11 +38,11 @@ jobs:
           echo "🔹 Stopping & removing old containers..."
           docker-compose down --remove-orphans
 
-          echo "🔹 Removing all Docker images..."
-          docker rmi -f $(docker images -aq) || true
+          # echo "🔹 Removing all Docker images..."
+          # docker rmi -f $(docker images -aq) || true
 
-          echo "🔹 Pruning Docker system..."
-          docker system prune -af --volumes || true
+          # echo "🔹 Pruning Docker system..."
+          # docker system prune -af --volumes || true
 
           echo "🔹 Rebuilding & deploying services..."
           docker-compose -f docker-compose.prod.yml up --build -d
