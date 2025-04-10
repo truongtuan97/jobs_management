@@ -78,3 +78,5 @@ gem 'rack-attack'
 gem 'mongoid', '~> 8.0'
 
 gem 'makara'
+
+gem 'rails-observers'
